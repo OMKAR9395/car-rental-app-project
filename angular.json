@@ -25,9 +25,14 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               {
+                
                 "glob": "**/*",
                 "input": "public"
-              }
+                
+              },
+              "src/favicon.ico",
+  "src/assets",
+  "src/_redirects"
             ],
             "styles": [
               "src/styles.scss",
@@ -87,7 +92,10 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/favicon.ico",
+  "src/assets",
+  "src/_redirects"
             ],
             "styles": [
               "src/styles.scss"
