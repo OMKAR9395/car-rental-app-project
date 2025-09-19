@@ -23,16 +23,11 @@ import { MatDividerModule }   from '@angular/material/divider';
   styleUrl: './layout.scss'
 })
 export class Layout {
-  // topbar
   collapsed   = signal(true);
   showSearch  = signal(false);
   theme       = signal<'dark'|'light'>('dark');
-
-  // badges (demo)
   notifCount  = signal(3);
   cartCount   = signal(1);
-
-  // custom MEGA panel (no mat-menu → full-width strip below toolbar)
   megaOpen    = signal(false);
 
   toggle()            { this.collapsed.update(v => !v); }
