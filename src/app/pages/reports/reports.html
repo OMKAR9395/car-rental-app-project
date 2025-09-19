@@ -1,0 +1,180 @@
+<section class="rep-wrap">
+  <div class="head">
+    <div class="title">
+      <mat-icon>insights</mat-icon>
+      <h1>Reports</h1>
+      <span class="sub">Filter and export your booking data</span>
+    </div>
+    <div class="head-actions">
+      <button mat-stroked-button color="primary" (click)="exportCsv()" matTooltip="Download CSV">
+        <mat-icon>download</mat-icon> Export
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filters shadow-sm">
+    <form [formGroup]="form" class="row g-2 align-items-end">
+      <div class="col-12 col-lg-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Date range</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate placeholder="From" formControlName="from">
+            <input matEndDate   placeholder="To"   formControlName="to">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+          <mat-error *ngIf="form.hasError('badRange')">End date must be after start date</mat-error>
+        </mat-form-field>
+
+        <div class="quick">
+          <button type="button" mat-button (click)="quick('today')">Today</button>
+          <button type="button" mat-button (click)="quick('7d')">Last 7d</button>
+          <button type="button" mat-button (click)="quick('30d')">Last 30d</button>
+          <button type="button" mat-button (click)="quick('month')">This month</button>
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Locations</mat-label>
+          <mat-select multiple formControlName="locations">
+            <mat-option *ngFor="let l of locations" [value]="l.code">{{ l.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Car types</mat-label>
+          <mat-select multiple formControlName="types">
+            <mat-option value="hatchback">Hatchback</mat-option>
+            <mat-option value="sedan">Sedan</mat-option>
+            <mat-option value="suv">SUV</mat-option>
+            <mat-option value="luxury">Luxury</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Status</mat-label>
+          <mat-select multiple formControlName="status">
+            <mat-option value="confirmed">Confirmed</mat-option>
+            <mat-option value="ongoing">Ongoing</mat-option>
+            <mat-option value="completed">Completed</mat-option>
+            <mat-option value="cancelled">Cancelled</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Search</mat-label>
+          <input matInput placeholder="Customer / Car / ID" formControlName="q">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 d-flex gap-2">
+        <button type="button" mat-stroked-button color="primary" (click)="reset()">
+          <mat-icon>filter_alt_off</mat-icon> Reset
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <mat-card class="kpi">
+      <div class="icon"><mat-icon>assignment</mat-icon></div>
+      <div class="text">
+        <div class="label">Bookings</div>
+        <div class="value">{{ totalBookings() }}</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="kpi">
+      <div class="icon"><mat-icon>sell</mat-icon></div>
+      <div class="text">
+        <div class="label">Revenue</div>
+        <div class="value">{{ currency(totalRevenue()) }}</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="kpi">
+      <div class="icon"><mat-icon>cancel</mat-icon></div>
+      <div class="text">
+        <div class="label">Cancelled</div>
+        <div class="value">{{ cancelled() }}</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="kpi">
+      <div class="icon"><mat-icon>payments</mat-icon></div>
+      <div class="text">
+        <div class="label">Avg Ticket</div>
+        <div class="value">{{ currency(avgTicket()) }}</div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Table -->
+  <mat-card class="panel">
+    <div class="panel-head">
+      <div class="left">
+        <mat-icon>table_rows</mat-icon>
+        <h3>Results</h3>
+      </div>
+      <div class="right">
+        <button mat-stroked-button (click)="exportCsv()" color="primary">
+          <mat-icon>download</mat-icon> Export CSV
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table mat-table [dataSource]="filtered()">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> Booking ID </th>
+          <td mat-cell *matCellDef="let r">{{ r.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef> Date </th>
+          <td mat-cell *matCellDef="let r">{{ r.date | date:'MMM d, y' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="customer">
+          <th mat-header-cell *matHeaderCellDef> Customer </th>
+          <td mat-cell *matCellDef="let r">{{ r.customer }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="car">
+          <th mat-header-cell *matHeaderCellDef> Car </th>
+          <td mat-cell *matCellDef="let r">{{ r.car }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="loc">
+          <th mat-header-cell *matHeaderCellDef> Loc </th>
+          <td mat-cell *matCellDef="let r">{{ r.location }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let r">{{ r.status }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef> Amount </th>
+          <td mat-cell *matCellDef="let r">
+            {{ currency(r.status==='cancelled' ? 0 : r.days * r.dailyPrice) }}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['id','date','customer','car','loc','status','amount']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['id','date','customer','car','loc','status','amount'];"></tr>
+      </table>
+    </div>
+  </mat-card>
+</section>

@@ -1,0 +1,115 @@
+<div id="particles-js"></div>
+
+<div class="container">
+  <div class="main">
+    <!-- Tabs -->
+    <div class="tabs">
+      <div
+        class="tab"
+        [class.active]="isLogin()"
+        (click)="switchTab('login')"
+        data-tab="login">
+        Login
+      </div>
+      <div
+        class="tab"
+        [class.active]="!isLogin()"
+        (click)="switchTab('register')"
+        data-tab="register">
+        Register
+      </div>
+    </div>
+
+    <div class="form-container">
+      <!-- Login Form -->
+      <form
+        class="form"
+        [class.active]="isLogin()"
+        [formGroup]="loginForm"
+        (ngSubmit)="onLogin()">
+
+        <h2>Log In</h2>
+
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <input type="text" placeholder="Username or Email" formControlName="usernameOrEmail">
+        </div>
+        <div class="err" *ngIf="hasErr(loginForm.get('usernameOrEmail'), 'required')">Required</div>
+        <div class="err" *ngIf="hasErr(loginForm.get('usernameOrEmail'), 'minlength')">Min 3 chars</div>
+
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Password" formControlName="password">
+        </div>
+        <div class="err" *ngIf="hasErr(loginForm.get('password'), 'required')">Required</div>
+        <div class="err" *ngIf="hasErr(loginForm.get('password'), 'minlength')">Min 6 chars</div>
+
+        <div class="options">
+          <div class="remember">
+            <input type="checkbox" id="remember" formControlName="remember">
+            <label for="remember">Remember me</label>
+          </div>
+          <a href="#" class="forgot">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="btn">Login</button>
+
+        <div class="separator"><span>Or continue with</span></div>
+        <div class="social-login">
+          <div class="social-btn"><i class="fab fa-google"></i></div>
+          <div class="social-btn"><i class="fab fa-facebook-f"></i></div>
+          <div class="social-btn"><i class="fab fa-twitter"></i></div>
+        </div>
+      </form>
+
+      <!-- Register Form -->
+      <form
+        class="form"
+        [class.active]="!isLogin()"
+        [formGroup]="registerForm"
+        (ngSubmit)="onRegister()">
+
+        <h2>Create Account</h2>
+
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <input type="text" placeholder="Full Name" formControlName="fullName">
+        </div>
+        <div class="err" *ngIf="hasErr(registerForm.get('fullName'), 'required')">Required</div>
+        <div class="err" *ngIf="hasErr(registerForm.get('fullName'), 'minlength')">Min 3 chars</div>
+
+        <div class="input-group">
+          <i class="fas fa-envelope"></i>
+          <input type="email" placeholder="Email Address" formControlName="email">
+        </div>
+        <div class="err" *ngIf="hasErr(registerForm.get('email'), 'required')">Required</div>
+        <div class="err" *ngIf="hasErr(registerForm.get('email'), 'email')">Invalid email</div>
+
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Password" formControlName="password">
+        </div>
+        <div class="err" *ngIf="hasErr(registerForm.get('password'), 'required')">Required</div>
+        <div class="err" *ngIf="hasErr(registerForm.get('password'), 'minlength')">Min 6 chars</div>
+
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Confirm Password" formControlName="confirmPassword">
+        </div>
+        <div class="err" *ngIf="hasErr(registerForm.get('confirmPassword'), 'required')">Required</div>
+        <div class="err" *ngIf="registerForm.touched && registerForm.hasError('mismatch')">
+          Passwords do not match
+        </div>
+
+        <button type="submit" class="btn">Register</button>
+
+        <div class="separator"><span>Or sign up with</span></div>
+        <div class="social-login">
+          <div class="social-btn"><i class="fab fa-google"></i></div>
+          <div class="social-btn"><i class="fab fa-facebook-f"></i></div>
+          <div class="social-btn"><i class="fab fa-twitter"></i></div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

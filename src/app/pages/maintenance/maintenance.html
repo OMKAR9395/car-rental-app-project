@@ -1,0 +1,195 @@
+<section class="mt-wrap">
+  <div class="head">
+    <div class="title">
+      <mat-icon>event_busy</mat-icon>
+      <h1>Maintenance / Blackout</h1>
+      <span class="sub">Block cars for service, repairs or compliance</span>
+    </div>
+    <div class="head-actions">
+      <button mat-stroked-button color="primary" (click)="exportCsv()">
+        <mat-icon>download</mat-icon> Export
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Form -->
+    <div class="col-12 col-xl-4">
+      <mat-card class="panel">
+        <div class="panel-head">
+          <div class="left">
+            <mat-icon>add_task</mat-icon>
+            <h3>Add Block</h3>
+          </div>
+        </div>
+
+        <form class="panel-body m-form" [formGroup]="form" (ngSubmit)="save()">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Car</mat-label>
+            <mat-select formControlName="carId">
+              <mat-option *ngFor="let c of cars()" [value]="c.id">{{ c.brand }} {{ c.model }} ({{ c.id }})</mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('carId')?.hasError('required')">Required</mat-error>
+          </mat-form-field>
+
+          <div class="row g-2">
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>From</mat-label>
+                <input matInput [matDatepicker]="dp1" formControlName="from">
+                <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+                <mat-datepicker #dp1></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>To</mat-label>
+                <input matInput [matDatepicker]="dp2" formControlName="to">
+                <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+                <mat-datepicker #dp2></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="warn" *ngIf="form.hasError('badRange')">End date must be after start date</div>
+          <div class="warn" *ngIf="clash">Warning: Overlaps with <b>{{ clash }}</b></div>
+
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="type">
+              <mat-option value="service">Service</mat-option>
+              <mat-option value="repair">Repair</mat-option>
+              <mat-option value="insurance">Insurance</mat-option>
+              <mat-option value="puc">PUC</mat-option>
+              <mat-option value="other">Other</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Notes</mat-label>
+            <textarea matInput rows="2" formControlName="notes" placeholder="e.g. 60k km service, oil + filters"></textarea>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-stroked-button type="button" color="primary" (click)="reset()">
+              <mat-icon>restart_alt</mat-icon> Reset
+            </button>
+            <span class="flex"></span>
+            <button mat-raised-button color="accent" type="submit">
+              <mat-icon>add</mat-icon> Add Block
+            </button>
+          </div>
+        </form>
+      </mat-card>
+    </div>
+
+    <!-- List + Filters -->
+    <div class="col-12 col-xl-8">
+      <mat-card class="panel">
+        <div class="panel-head">
+          <div class="left">
+            <mat-icon>table_rows</mat-icon>
+            <h3>Blocks ({{ filtered().length }})</h3>
+          </div>
+          <div class="right">
+            <form class="filters" [formGroup]="f">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Car</mat-label>
+                <mat-select formControlName="carId">
+                  <mat-option value="">All</mat-option>
+                  <mat-option *ngFor="let c of cars()" [value]="c.id">{{ c.brand }} {{ c.model }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Type</mat-label>
+                <mat-select multiple formControlName="types">
+                  <mat-option value="service">Service</mat-option>
+                  <mat-option value="repair">Repair</mat-option>
+                  <mat-option value="insurance">Insurance</mat-option>
+                  <mat-option value="puc">PUC</mat-option>
+                  <mat-option value="other">Other</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>From</mat-label>
+                <input matInput [matDatepicker]="fp1" formControlName="from">
+                <mat-datepicker-toggle matSuffix [for]="fp1"></mat-datepicker-toggle>
+                <mat-datepicker #fp1></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>To</mat-label>
+                <input matInput [matDatepicker]="fp2" formControlName="to">
+                <mat-datepicker-toggle matSuffix [for]="fp2"></mat-datepicker-toggle>
+                <mat-datepicker #fp2></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Search</mat-label>
+                <input matInput placeholder="ID / notes / car" [value]="f.value.q || ''" (input)="onSearch($event)">
+                <mat-icon matSuffix>search</mat-icon>
+              </mat-form-field>
+            </form>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table mat-table [dataSource]="filtered()">
+
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef> ID </th>
+              <td mat-cell *matCellDef="let r">{{ r.id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="car">
+              <th mat-header-cell *matHeaderCellDef> Car </th>
+              <td mat-cell *matCellDef="let r">{{ carName(r.carId) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef> Type </th>
+              <td mat-cell *matCellDef="let r">
+                <mat-chip-set>
+                  <mat-chip [class.t-service]="r.type==='service'"
+                            [class.t-repair]="r.type==='repair'"
+                            [class.t-ins]="r.type==='insurance'"
+                            [class.t-puc]="r.type==='puc'"
+                            [class.t-oth]="r.type==='other'">
+                    {{ r.type }}
+                  </mat-chip>
+                </mat-chip-set>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="range">
+              <th mat-header-cell *matHeaderCellDef> Range </th>
+              <td mat-cell *matCellDef="let r">{{ r.from | date:'MMM d, y' }} → {{ r.to | date:'MMM d, y' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="days">
+              <th mat-header-cell *matHeaderCellDef> Days </th>
+              <td mat-cell *matCellDef="let r">{{ r.days }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="notes">
+              <th mat-header-cell *matHeaderCellDef> Notes </th>
+              <td mat-cell *matCellDef="let r">{{ r.notes || '-' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let r" class="text-end">
+                <button mat-icon-button color="warn" matTooltip="Delete" (click)="remove(r)"><mat-icon>delete</mat-icon></button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['id','car','type','range','days','notes','actions']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['id','car','type','range','days','notes','actions'];"></tr>
+          </table>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</section>

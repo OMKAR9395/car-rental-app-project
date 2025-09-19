@@ -1,0 +1,116 @@
+:host {
+  display: block;
+  background: #0d1117;
+  min-height: calc(100vh - 56px); // under navbar
+  color: #e8eef2;
+}
+
+.dash-wrap { padding: 16px; }
+
+/* Header */
+.dash-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px;
+  .title {
+    display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto; column-gap: 10px;
+    align-items: center;
+    mat-icon { grid-row: 1 / span 2; font-size: 30px; width: 30px; height: 30px; color: #48dbfb; }
+    h1 {
+      margin: 0; font-size: 26px; line-height: 1.2;
+      background: linear-gradient(90deg, #6c5ce7, #48dbfb);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: slideIn .5s ease both;
+    }
+    .sub { font-size: 12px; color: #9fb3c8; }
+  }
+  .actions { display: flex; gap: 10px; }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* KPI Grid */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.kpi {
+  background: radial-gradient(120% 120% at 100% 0%, rgba(108,92,231,.25) 0%, rgba(72,219,251,.08) 50%, rgba(0,0,0,.1) 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #e8eef2;
+  overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  &:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.35); border-color: rgba(72,219,251,.25); }
+}
+.kpi-body { display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: center; padding: 14px; }
+.kpi .icon {
+  width: 56px; height: 56px; display:flex; align-items:center; justify-content:center;
+  border-radius: 12px; background: rgba(255,255,255,0.06);
+  mat-icon { font-size: 28px; color: #48dbfb; }
+}
+.kpi .text .label { font-size: 12px; color: #9fb3c8; }
+.kpi .text .value { font-size: 22px; font-weight: 700; letter-spacing: .2px; }
+.kpi .text .muted { font-size: 12px; color: #aab7c6; }
+.kpi .delta { display:flex; align-items:center; gap:6px; font-size:12px; margin-top: 4px; }
+.kpi .delta.up { color:#7ee787; }
+.kpi .delta mat-icon { font-size: 16px; height: 16px; width: 16px; }
+
+/* Mid panels */
+.mid-grid {
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: 12px; margin-bottom: 12px;
+}
+.panel {
+  background: rgba(18,22,28,0.92);
+  border: 1px solid #1f2630;
+  color: #e8eef2;
+}
+.panel-head {
+  display:flex; align-items:center; justify-content:space-between; padding: 12px 14px;
+  border-bottom: 1px solid #1f2630;
+  .left { display:flex; align-items:center; gap:8px; }
+  h3 { margin: 0; font-size: 16px; }
+  mat-icon { color:#48dbfb; }
+}
+
+/* Fleet list */
+.fleet-list { padding: 10px 14px; display: grid; gap: 10px; }
+.fleet-row { display: grid; grid-template-columns: 160px 1fr 48px; align-items: center; gap: 10px; }
+.fleet-row .meta { display:flex; align-items:center; gap: 8px; }
+.fleet-row .meta .loc { font-weight: 600; }
+.fleet-row .meta .count { color: #9fb3c8; font-size: 12px; }
+.fleet-row .pct { font-weight: 600; text-align: right; }
+
+/* Sparkline */
+.spark-wrap { padding: 8px 14px 14px; position: relative; }
+.spark { width: 100%; height: 110px; }
+.legend { position: absolute; right: 16px; bottom: 12px; }
+.pill {
+  display:inline-flex; align-items:center; gap:8px; padding: 6px 10px; border-radius: 999px;
+  background: rgba(108,92,231,.15); border: 1px solid rgba(108,92,231,.25);
+}
+.pill .dot { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(90deg, #6c5ce7, #48dbfb); }
+
+/* Table */
+.table-panel .table-wrap { overflow: auto; }
+table { width: 100%; }
+th { color: #aab7c6; font-weight: 600; }
+td, th { padding: 12px 10px; }
+.data-row { transition: background .2s ease; }
+.data-row:hover { background: rgba(255,255,255,0.03); }
+.row-actions { text-align: right; }
+
+/* Buttons */
+.create-btn { color: #0b1324; }
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .mid-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .dash-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .kpi-grid { grid-template-columns: 1fr; }
+}

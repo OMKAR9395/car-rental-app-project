@@ -1,0 +1,198 @@
+<section class="cust-wrap">
+  <div class="head">
+    <div class="title">
+      <mat-icon>group</mat-icon>
+      <h1>Customers</h1>
+      <span class="sub">Add / manage your renters</span>
+    </div>
+  </div>
+
+  <mat-card class="panel">
+    <div class="panel-head">
+      <div class="left">
+        <mat-icon>person_add</mat-icon>
+        <h3>Customer Form</h3>
+      </div>
+    </div>
+
+    <form class="panel-body" [formGroup]="form" (ngSubmit)="submit()">
+      <!-- Type -->
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="lbl">Customer Type</label>
+          <mat-radio-group formControlName="type" class="radio-line">
+            <mat-radio-button value="individual">Individual</mat-radio-button>
+            <mat-radio-button value="corporate" class="ms-3">Corporate</mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>
+
+      <!-- Basic -->
+      <div class="row g-3">
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Full Name</mat-label>
+            <input matInput formControlName="name">
+            <mat-error *ngIf="has('name','required')">Required</mat-error>
+            <mat-error *ngIf="has('name','minlength')">Min 3 chars</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Phone</mat-label>
+            <input matInput maxlength="10" formControlName="phone">
+            <mat-error *ngIf="has('phone','required')">Required</mat-error>
+            <mat-error *ngIf="has('phone','pattern')">Invalid</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Email (optional)</mat-label>
+            <input matInput formControlName="email">
+            <mat-error *ngIf="has('email','email')">Invalid email</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>DOB</mat-label>
+            <input matInput [matDatepicker]="dobp" formControlName="dob" [min]="minDob" [max]="maxDob">
+            <mat-datepicker-toggle matSuffix [for]="dobp"></mat-datepicker-toggle>
+            <mat-datepicker #dobp></mat-datepicker>
+            <mat-error *ngIf="form.hasError('underage')">Must be 18+</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>KYC Type</mat-label>
+            <mat-select formControlName="kycType">
+              <mat-option value="aadhaar">Aadhaar</mat-option>
+              <mat-option value="passport">Passport</mat-option>
+              <mat-option value="pan">PAN</mat-option>
+              <mat-option value="dl">Driving License</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>KYC Number</mat-label>
+            <input matInput formControlName="kycNumber">
+            <mat-error *ngIf="has('kycNumber','required')">Required</mat-error>
+            <mat-error *ngIf="has('kycNumber','minlength')">Min 6 chars</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Driving License No. (optional)</mat-label>
+            <input matInput formControlName="dlNumber">
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>License Expiry (optional)</mat-label>
+            <input matInput [matDatepicker]="expdp" formControlName="dlExpiry">
+            <mat-datepicker-toggle matSuffix [for]="expdp"></mat-datepicker-toggle>
+            <mat-datepicker #expdp></mat-datepicker>
+            <mat-error *ngIf="form.hasError('pastExpiry')">Must be a future date</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Address -->
+      <mat-divider class="my-2"></mat-divider>
+      <div class="row g-3">
+        <div class="col-12">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Address</mat-label>
+            <textarea matInput rows="2" formControlName="address"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>City</mat-label>
+            <input matInput formControlName="city">
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>State</mat-label>
+            <input matInput formControlName="state">
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Pincode</mat-label>
+            <input matInput maxlength="6" formControlName="pincode">
+            <mat-error *ngIf="has('pincode','pattern')">6 digits</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button mat-stroked-button color="primary" type="button" (click)="resetAll()">
+          <mat-icon>restart_alt</mat-icon> Reset
+        </button>
+        <span class="flex"></span>
+        <button mat-raised-button color="accent" type="submit">
+          <mat-icon>save</mat-icon> Save Customer
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <!-- Saved list -->
+  <mat-card class="panel mt-3">
+    <div class="panel-head">
+      <div class="left">
+        <mat-icon>list_alt</mat-icon>
+        <h3>Saved Customers</h3>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table mat-table [dataSource]="customers()">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let r">{{ r.id }}</td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Name </th>
+          <td mat-cell *matCellDef="let r">{{ r.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef> Phone </th>
+          <td mat-cell *matCellDef="let r">{{ r.phone }}</td>
+        </ng-container>
+        <ng-container matColumnDef="kyc">
+          <th mat-header-cell *matHeaderCellDef> KYC </th>
+          <td mat-cell *matCellDef="let r">{{ kycLabel(r.kycType) }} • {{ r.kycNumber }}</td>
+        </ng-container>
+        <ng-container matColumnDef="city">
+          <th mat-header-cell *matHeaderCellDef> City </th>
+          <td mat-cell *matCellDef="let r">{{ r.city || '-' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let r" class="text-end">
+            <button mat-icon-button color="warn" (click)="remove(r)" matTooltip="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayed"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayed;"></tr>
+      </table>
+    </div>
+  </mat-card>
+</section>

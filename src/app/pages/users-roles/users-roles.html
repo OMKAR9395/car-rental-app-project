@@ -1,0 +1,290 @@
+<section class="ur-wrap">
+    <div class="head">
+        <div class="title">
+            <mat-icon>group</mat-icon>
+            <h1>Users & Roles</h1>
+            <span class="sub">Manage users, roles and permissions</span>
+        </div>
+        <div class="head-actions">
+            <button mat-stroked-button color="primary" (click)="exportCsv()">
+                <mat-icon>download</mat-icon> Export Users
+            </button>
+        </div>
+    </div>
+
+    <mat-tab-group>
+        <!-- USERS TAB -->
+        <mat-tab label="Users">
+            <div class="row g-3 mt-2">
+                <!-- Form -->
+                <div class="col-12 col-xxl-4">
+                    <mat-card class="panel">
+                        <div class="panel-head">
+                            <div class="left">
+                                <mat-icon>{{ editing() ? 'edit' : 'person_add' }}</mat-icon>
+                                <h3>{{ editing() ? 'Edit User' : 'Add User' }}</h3>
+                            </div>
+                            <div class="right" *ngIf="editing()"><span class="badge">Editing {{ editing() }}</span>
+                            </div>
+                        </div>
+
+                        <form class="panel-body ur-form" [formGroup]="form" (ngSubmit)="save()">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Name</mat-label>
+                                <input matInput formControlName="name">
+                                <mat-error *ngIf="form.get('name')?.invalid">Required</mat-error>
+                            </mat-form-field>
+
+                            <div class="row g-2">
+                                <div class="col-md-8">
+                                    <mat-form-field appearance="outline" class="w-100">
+                                        <mat-label>Email</mat-label>
+                                        <input matInput formControlName="email" placeholder="user@demo.com">
+                                        <mat-error *ngIf="form.get('email')?.invalid">Invalid</mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-4">
+                                    <mat-form-field appearance="outline" class="w-100">
+                                        <mat-label>Phone</mat-label>
+                                        <input matInput formControlName="phone" maxlength="10">
+                                        <mat-error *ngIf="form.get('phone')?.hasError('pattern')">Invalid</mat-error>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <div class="row g-2 align-items-center">
+                                <div class="col-md-6">
+                                    <mat-form-field appearance="outline" class="w-100">
+                                        <mat-label>Role</mat-label>
+                                        <mat-select formControlName="role">
+                                            <mat-option *ngFor="let r of ['admin','ops','agent','viewer']"
+                                                [value]="r">{{ r | titlecase }}</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-center">
+                                    <mat-slide-toggle formControlName="active">Active</mat-slide-toggle>
+                                </div>
+                            </div>
+
+                            <!-- Optional password (demo only) -->
+                            <div class="row g-2">
+                                <div class="col-md-6 d-flex align-items-center">
+                                    <mat-slide-toggle formControlName="setPassword">Set password now</mat-slide-toggle>
+                                </div>
+                                <div class="col-md-6" *ngIf="form.value.setPassword">
+                                    <mat-form-field appearance="outline" class="w-100">
+                                        <mat-label>Password</mat-label>
+                                        <input matInput type="text" formControlName="password" placeholder="Demo@123">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <!-- Role effective chips -->
+                            <div class="chips">
+                                <mat-chip-set>
+                                    <mat-chip *ngFor="let c of effectiveChips()">{{ c }}</mat-chip>
+                                </mat-chip-set>
+                            </div>
+
+                            <div class="form-actions">
+                                <button mat-stroked-button color="primary" type="button" (click)="cancelEdit()">
+                                    <mat-icon>restart_alt</mat-icon> Reset
+                                </button>
+                                <span class="flex"></span>
+                                <button mat-raised-button color="accent" type="submit">
+                                    <mat-icon>{{ editing() ? 'save' : 'person_add' }}</mat-icon> {{ editing() ? 'Update'
+                                    : 'Add User' }}
+                                </button>
+                            </div>
+                        </form>
+                    </mat-card>
+                </div>
+
+                <!-- List -->
+                <div class="col-12 col-xxl-8">
+                    <mat-card class="panel">
+                        <div class="panel-head">
+                            <div class="left">
+                                <mat-icon>table_rows</mat-icon>
+                                <h3>All Users ({{ filtered().length }})</h3>
+                            </div>
+                            <div class="right row gx-2 gy-0 align-items-end">
+                                <div class="col-12 col-md-5">
+                                    <mat-form-field appearance="outline" class="w-100">
+                                        <mat-label>Search</mat-label>
+                                        <input matInput placeholder="Name / Email / ID" [value]="q()"
+                                            (input)="q.set(($any($event.target)).value)">
+                                        <mat-icon matSuffix>search</mat-icon>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <mat-form-field appearance="outline" class="w-100">
+                                        <mat-label>Role</mat-label>
+                                        <mat-select [value]="roleFilter()"
+                                            (selectionChange)="roleFilter.set($event.value)">
+                                            <mat-option value="">All</mat-option>
+                                            <mat-option *ngFor="let r of ['admin','ops','agent','viewer']"
+                                                [value]="r">{{ r | titlecase }}</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-6 col-md-3 d-flex align-items-center">
+                                    <mat-slide-toggle [checked]="onlyActive()"
+                                        (change)="onlyActive.set($event.checked)">Only active</mat-slide-toggle>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table mat-table [dataSource]="filtered()">
+
+                                <ng-container matColumnDef="id">
+                                    <th mat-header-cell *matHeaderCellDef> ID </th>
+                                    <td mat-cell *matCellDef="let u">{{ u.id }}</td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="name">
+                                    <th mat-header-cell *matHeaderCellDef> Name </th>
+                                    <td mat-cell *matCellDef="let u">
+                                        <div class="namecell">
+                                            <div class="n">{{ u.name }}</div>
+                                            <div class="e">{{ u.email }}</div>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="phone">
+                                    <th mat-header-cell *matHeaderCellDef> Phone </th>
+                                    <td mat-cell *matCellDef="let u">{{ u.phone || '-' }}</td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="role">
+                                    <th mat-header-cell *matHeaderCellDef> Role </th>
+                                    <td mat-cell *matCellDef="let u">
+                                        <mat-chip-set>
+                                            <mat-chip [class.r-admin]="u.role==='admin'" [class.r-ops]="u.role==='ops'"
+                                                [class.r-agent]="u.role==='agent'" [class.r-viewer]="u.role==='viewer'">
+                                                {{ u.role }}
+                                            </mat-chip>
+                                        </mat-chip-set>
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="status">
+                                    <th mat-header-cell *matHeaderCellDef> Status </th>
+                                    <td mat-cell *matCellDef="let u">
+                                        <mat-chip-set>
+                                            <mat-chip [class.active]="u.active" [class.inactive]="!u.active">{{ u.active
+                                                ? 'Active' : 'Inactive' }}</mat-chip>
+                                        </mat-chip-set>
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="created">
+                                    <th mat-header-cell *matHeaderCellDef> Created </th>
+                                    <td mat-cell *matCellDef="let u">{{ u.createdAt | date:'MMM d, y' }}</td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="actions">
+                                    <th mat-header-cell *matHeaderCellDef></th>
+                                    <td mat-cell *matCellDef="let u" class="text-end">
+                                        <button mat-icon-button matTooltip="Toggle active"
+                                            (click)="toggleActive(u)"><mat-icon>toggle_on</mat-icon></button>
+                                        <button mat-icon-button color="primary" matTooltip="Edit"
+                                            (click)="startEdit(u)"><mat-icon>edit</mat-icon></button>
+                                        <button mat-icon-button color="accent" matTooltip="Reset password"
+                                            (click)="resetPassword(u)"><mat-icon>key</mat-icon></button>
+                                        <button mat-icon-button color="warn" matTooltip="Delete"
+                                            (click)="remove(u)"><mat-icon>delete</mat-icon></button>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row
+                                    *matHeaderRowDef="['id','name','phone','role','status','created','actions']"></tr>
+                                <tr mat-row
+                                    *matRowDef="let row; columns: ['id','name','phone','role','status','created','actions'];">
+                                </tr>
+                            </table>
+                        </div>
+                    </mat-card>
+                </div>
+            </div>
+        </mat-tab>
+
+        <!-- ROLES TAB -->
+        <mat-tab label="Roles">
+            <div class="mt-2">
+                <mat-card class="panel">
+                    <div class="panel-head">
+                        <div class="left">
+                            <mat-icon>admin_panel_settings</mat-icon>
+                            <h3>Role Permissions</h3>
+                        </div>
+                        <div class="right role-head">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Role</mat-label>
+                                <mat-select [value]="selectedRole()" (selectionChange)="selectedRole.set($event.value)">
+                                    <mat-option *ngFor="let r of ['admin','ops','agent','viewer']" [value]="r">{{ r |
+                                        titlecase }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <button mat-stroked-button color="primary" (click)="resetRole(selectedRole())">
+                                <mat-icon>restart_alt</mat-icon> Reset to Default
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel-body">
+                        <div class="perm-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Module</th>
+                                        <th>View</th>
+                                        <th>Create</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                        <th>Approve</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        *ngFor="let m of ['Bookings','Cars','Customers','Branches','Maintenance','Reports']">
+                                        <td class="mod">{{ m }}</td>
+
+                                        <td><mat-checkbox [checked]="rolePerm(selectedRole(), $any(m), 'view')"
+                                                (change)="togglePerm(selectedRole(), $any(m), 'view', $event.checked)">
+                                            </mat-checkbox></td>
+
+                                        <td><mat-checkbox [checked]="rolePerm(selectedRole(), $any(m), 'create')"
+                                                (change)="togglePerm(selectedRole(), $any(m), 'create', $event.checked)">
+                                            </mat-checkbox></td>
+
+                                        <td><mat-checkbox [checked]="rolePerm(selectedRole(), $any(m), 'edit')"
+                                                (change)="togglePerm(selectedRole(), $any(m), 'edit', $event.checked)">
+                                            </mat-checkbox></td>
+
+                                        <td><mat-checkbox [checked]="rolePerm(selectedRole(), $any(m), 'delete')"
+                                                (change)="togglePerm(selectedRole(), $any(m), 'delete', $event.checked)">
+                                            </mat-checkbox></td>
+
+                                        <td><mat-checkbox [checked]="rolePerm(selectedRole(), $any(m), 'approve')"
+                                                (change)="togglePerm(selectedRole(), $any(m), 'approve', $event.checked)">
+                                            </mat-checkbox></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="hint mt-2">
+                            * Demo मध्ये role matrix **in-memory** आहे. नंतर API केल्यावर `GET/PUT /roles/:role` ने
+                            persist करु.
+                        </div>
+                    </div>
+                </mat-card>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</section>

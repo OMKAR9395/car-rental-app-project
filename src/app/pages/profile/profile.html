@@ -1,0 +1,183 @@
+<form class="form-root profile-form" [formGroup]="form">
+
+<section class="profile-wrap">
+  <div class="head">
+    <div class="title">
+      <mat-icon>person</mat-icon>
+      <h1>Profile</h1>
+      <span class="sub">Manage your account & preferences</span>
+    </div>
+    <div class="head-actions">
+      <button mat-stroked-button color="primary" (click)="resetAll()">
+        <mat-icon>restart_alt</mat-icon> Reset
+      </button>
+      <button mat-raised-button color="accent" (click)="save()">
+        <mat-icon>save</mat-icon> Save Changes
+      </button>
+    </div>
+  </div>
+
+  <!-- Top: Avatar + Basic -->
+  <mat-card class="panel mb-3">
+    <div class="panel-body row g-3 align-items-center">
+      <div class="col-12 col-md-auto">
+        <div class="avatar">
+          <img [src]="avatarUrl()" alt="avatar">
+          <label class="upload-btn" for="avatarFile">
+            <mat-icon>photo_camera</mat-icon>
+          </label>
+          <input id="avatarFile" type="file" accept="image/*" (change)="onAvatarChange($event)">
+        </div>
+      </div>
+
+      <div class="col-12 col-md">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Full Name</mat-label>
+              <input matInput formControlName="fullName">
+              <mat-error *ngIf="has('fullName','required')">Required</mat-error>
+              <mat-error *ngIf="has('fullName','minlength')">Min 3 chars</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Username</mat-label>
+              <input matInput formControlName="username">
+              <mat-error *ngIf="has('username','required')">Required</mat-error>
+              <mat-error *ngIf="has('username','minlength')">Min 3 chars</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email">
+              <mat-error *ngIf="has('email','required')">Required</mat-error>
+              <mat-error *ngIf="has('email','email')">Invalid email</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Phone</mat-label>
+              <input matInput maxlength="10" formControlName="phone">
+              <mat-error *ngIf="has('phone','pattern')">Invalid number</mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Gender</mat-label>
+              <mat-select formControlName="gender">
+                <mat-option value="male">Male</mat-option>
+                <mat-option value="female">Female</mat-option>
+                <mat-option value="other">Other</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Date of Birth</mat-label>
+              <input matInput [matDatepicker]="dp" formControlName="dob" [min]="minDob" [max]="maxDob">
+              <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+              <mat-datepicker #dp></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Address -->
+  <mat-card class="panel mb-3">
+    <div class="panel-head">
+      <div class="left">
+        <mat-icon>home</mat-icon>
+        <h3>Address</h3>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="row g-3">
+        <div class="col-12">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Address</mat-label>
+            <textarea matInput rows="2" formControlName="address"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>City</mat-label>
+            <input matInput formControlName="city">
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>State</mat-label>
+            <input matInput formControlName="state">
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Pincode</mat-label>
+            <input matInput maxlength="6" formControlName="pincode">
+            <mat-error *ngIf="has('pincode','pattern')">6 digits</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Preferences -->
+  <mat-card class="panel mb-3">
+    <div class="panel-head">
+      <div class="left">
+        <mat-icon>tune</mat-icon>
+        <h3>Preferences</h3>
+      </div>
+    </div>
+    <div class="panel-body pref-grid">
+      <mat-slide-toggle formControlName="notifEmail">Email Notifications</mat-slide-toggle>
+      <mat-slide-toggle formControlName="notifSms">SMS Notifications</mat-slide-toggle>
+      <mat-slide-toggle formControlName="notifWhatsApp">WhatsApp Notifications</mat-slide-toggle>
+    </div>
+  </mat-card>
+
+  <!-- Change Password (optional) -->
+  <mat-card class="panel">
+    <div class="panel-head">
+      <div class="left">
+        <mat-icon>lock</mat-icon>
+        <h3>Change Password</h3>
+      </div>
+      <div class="right hint">Leave empty to keep your current password</div>
+    </div>
+<div class="panel-body row g-3" [formGroup]="$any(form.get('password'))">
+        
+      <div class="col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Current Password</mat-label>
+          <input matInput type="password" formControlName="current">
+          <mat-error *ngIf="passHas('currentRequired')">Required</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>New Password</mat-label>
+          <input matInput type="password" formControlName="next">
+          <mat-error *ngIf="passHas('nextWeak')">Min 6 chars</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Confirm New Password</mat-label>
+          <input matInput type="password" formControlName="confirm">
+          <mat-error *ngIf="passHas('mismatch')">Passwords must match</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </mat-card>
+</section>
+</form>

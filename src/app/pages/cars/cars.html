@@ -1,0 +1,163 @@
+<section class="cars-wrap">
+    <!-- Header + Actions -->
+    <div class="head">
+        <div class="title">
+            <mat-icon>directions_car</mat-icon>
+            <h1>Cars</h1>
+            <span class="count">{{ total() }} results</span>
+        </div>
+        <div class="head-actions">
+            <button mat-stroked-button color="primary" (click)="clearFilters()" matTooltip="Reset all filters">
+                <mat-icon>filter_alt_off</mat-icon> Clear
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters card shadow-sm">
+        <div class="row g-2 align-items-center">
+            <div class="col-12 col-md-4">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Search brand/model</mat-label>
+                    <input matInput placeholder="e.g. Honda City" [value]="q()" (input)="onQInput($event)">
+                    <button mat-icon-button matSuffix *ngIf="q()" (click)="q.set(''); pageIndex.set(0)"
+                        matTooltip="Clear">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-icon matSuffix>search</mat-icon>
+                </mat-form-field>
+            </div>
+
+            <div class="col-6 col-md-2">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Type</mat-label>
+                    <mat-select [value]="type()" (selectionChange)="type.set($event.value); pageIndex.set(0)">
+                        <mat-option value="all">All</mat-option>
+                        <mat-option value="hatchback">Hatchback</mat-option>
+                        <mat-option value="sedan">Sedan</mat-option>
+                        <mat-option value="suv">SUV</mat-option>
+                        <mat-option value="luxury">Luxury</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="col-6 col-md-2">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Transmission</mat-label>
+                    <mat-select [value]="transmission()"
+                        (selectionChange)="transmission.set($event.value); pageIndex.set(0)">
+                        <mat-option value="all">All</mat-option>
+                        <mat-option value="manual">Manual</mat-option>
+                        <mat-option value="automatic">Automatic</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="col-6 col-md-2">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Fuel</mat-label>
+                    <mat-select [value]="fuel()" (selectionChange)="fuel.set($event.value); pageIndex.set(0)">
+                        <mat-option value="all">All</mat-option>
+                        <mat-option value="petrol">Petrol</mat-option>
+                        <mat-option value="diesel">Diesel</mat-option>
+                        <mat-option value="ev">EV</mat-option>
+                        <mat-option value="hybrid">Hybrid</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="col-6 col-md-2">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Location</mat-label>
+                    <mat-select [value]="location()" (selectionChange)="location.set($event.value); pageIndex.set(0)">
+                        <mat-option value="all">All</mat-option>
+                        <mat-option *ngFor="let l of locations" [value]="l.code">{{ l.name }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="slider-block">
+                    <label>Min Seats: <b>{{ seatsMin() }}</b></label>
+                    <mat-slider min="2" max="7" step="1">
+                        <input matSliderThumb [ngModel]="seatsMin()"
+                            (ngModelChange)="seatsMin.set($event); pageIndex.set(0)">
+                    </mat-slider>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3">
+                <div class="slider-block">
+                    <label>Max Price/Day: <b>{{ currency(priceMax()) }}</b></label>
+                    <mat-slider min="1000" max="10000" step="500">
+                        <input matSliderThumb [ngModel]="priceMax()"
+                            (ngModelChange)="priceMax.set($event); pageIndex.set(0)">
+                    </mat-slider>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4 sort-wrap">
+                <div class="sorter">
+                    <span>Sort:</span>
+                    <button mat-stroked-button [class.active]="sortKey()==='price'" (click)="toggleSort('price')">
+                        Price <mat-icon>{{ sortKey()==='price' && sortDir()==='desc' ? 'south' : 'north' }}</mat-icon>
+                    </button>
+                    <button mat-stroked-button [class.active]="sortKey()==='rating'" (click)="toggleSort('rating')">
+                        Rating <mat-icon>{{ sortKey()==='rating' && sortDir()==='desc' ? 'south' : 'north' }}</mat-icon>
+                    </button>
+                    <button mat-stroked-button [class.active]="sortKey()==='seats'" (click)="toggleSort('seats')">
+                        Seats <mat-icon>{{ sortKey()==='seats' && sortDir()==='desc' ? 'south' : 'north' }}</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid">
+        <mat-card class="car-card" *ngFor="let c of paged()">
+            <div class="thumb">
+                <img [src]="c.imageUrl || 'assets/cars/placeholder.jpg'" [alt]="c.brand + ' ' + c.model" loading="lazy">
+                <div class="badge" *ngIf="c.fuel==='ev'"><mat-icon>bolt</mat-icon> EV</div>
+                <div class="badge right" *ngIf="c.transmission==='automatic'"><mat-icon>auto_mode</mat-icon> Auto</div>
+            </div>
+
+            <div class="body">
+                <div class="title">
+                    <h3>{{ c.brand }} <span>{{ c.model }}</span></h3>
+                    <div class="price">{{ currency(c.dailyPrice) }} <small>/day</small></div>
+                </div>
+
+                <div class="rating">
+                    <ng-container *ngIf="ratingArray(c.rating) as r">
+                        <mat-icon class="star" *ngFor="let _ of [].constructor(r.filled)">star</mat-icon>
+                        <mat-icon class="star" *ngIf="r.half">star_half</mat-icon>
+                        <mat-icon class="star off" *ngFor="let _ of [].constructor(r.empty)">star_outline</mat-icon>
+                    </ng-container>
+                    <span class="rval">{{ c.rating | number:'1.1-1' }}</span>
+                </div>
+
+                <div class="specs">
+                    <mat-chip selected>{{ c.type | titlecase }}</mat-chip>
+                    <mat-chip selected>{{ c.seats }} seats</mat-chip>
+                    <mat-chip selected>{{ c.fuel | uppercase }}</mat-chip>
+                    <mat-chip selected>{{ c.transmission | titlecase }}</mat-chip>
+                    <mat-chip *ngFor="let l of c.locations">{{ l }}</mat-chip>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button mat-stroked-button color="primary" (click)="viewCar(c)">
+                    <mat-icon>visibility</mat-icon> View
+                </button>
+                <button mat-raised-button color="accent" (click)="bookCar(c)">
+                    <mat-icon>event</mat-icon> Book
+                </button>
+            </div>
+        </mat-card>
+    </div>
+
+    <!-- Paginator -->
+    <mat-paginator [length]="total()" [pageIndex]="pageIndex()" [pageSize]="pageSize()" [pageSizeOptions]="[8,12,16,24]"
+        (page)="onPage($event)"></mat-paginator>
+</section>

@@ -1,0 +1,89 @@
+:host { display:block; background:#0d1117; color:#e8eef2; min-height:calc(100vh - 56px); }
+.profile-wrap { padding:16px; }
+
+/* Head */
+.head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; }
+.title { display:flex; align-items:center; gap:10px; }
+.title mat-icon { color:#48dbfb; }
+.title h1 {
+  margin:0; font-size:26px;
+  background: linear-gradient(90deg, #6c5ce7, #48dbfb);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.sub { color:#9fb3c8; font-size:12px; }
+.head-actions { display:flex; gap:8px; }
+
+/* Panels */
+.panel { background: rgba(18,22,28,0.92); border:1px solid #1f2630; border-radius:12px; overflow:hidden; }
+.panel-head { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #1f2630; }
+.panel-head .left { display:flex; align-items:center; gap:8px; }
+.panel-head mat-icon { color:#48dbfb; }
+.panel-body { padding:14px; }
+
+.mb-3 { margin-bottom:12px; }
+
+/* Avatar */
+.avatar {
+  position: relative; width: 108px; height:108px; border-radius:50%;
+  overflow:hidden; background:#0b1324; border:1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
+}
+.avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+.avatar input[type="file"] { display:none; }
+.upload-btn {
+  position:absolute; right:6px; bottom:6px; width:34px; height:34px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  background: linear-gradient(90deg, #6c5ce7, #48dbfb);
+  color:#0b1324; border:1px solid rgba(255,255,255,0.2);
+}
+
+/* Preferences grid */
+.pref-grid { display:flex; gap:18px; flex-wrap:wrap; }
+
+/* Hints */
+.hint { color:#9fb3c8; font-size:12px; }
+
+/* Table-less page → small hover effect on cards */
+.panel:hover { border-color: rgba(72,219,251,.25); box-shadow: 0 8px 24px rgba(0,0,0,.35); transition: .2s ease; }
+/* Profile page only */
+.profile-form {
+  /* mat-slide-toggle / mat-checkbox label text -> white */
+  .mat-mdc-slide-toggle .mdc-label,
+  .mat-mdc-checkbox .mdc-label,
+  .mat-mdc-slide-toggle label,
+  .mat-mdc-checkbox label {
+    color: #fff !important;
+    opacity: .95;
+  }
+
+  /* जर toggle/checkbox disabled असेल तर थोडं फिकट */
+  .mat-mdc-slide-toggle.mat-mdc-slide-toggle-disabled .mdc-label,
+  .mat-mdc-checkbox.mat-mdc-checkbox-disabled .mdc-label,
+  .mat-mdc-slide-toggle.mat-mdc-slide-toggle-disabled label,
+  .mat-mdc-checkbox.mat-mdc-checkbox-disabled label {
+    color: rgba(255,255,255,.55) !important;
+    opacity: 1;
+  }
+}
+
+.profile-select-panel { background:#10151c; color:#e8eef2; }
+.profile-select-panel .mdc-list-item:hover { background: rgba(255,255,255,.06); }
+/* फक्त Profile पेजवरील slide-toggle labels white करा */
+.profile-form .mat-mdc-slide-toggle .mdc-label {
+  color: #fff !important;
+  opacity: .95 !important;
+}
+
+/* disabled असल्यासही readable ठेवा */
+.profile-form .mat-mdc-slide-toggle.mat-mdc-slide-toggle-disabled .mdc-label {
+  color: rgba(255,255,255,.6) !important;
+  opacity: 1 !important;
+}
+:host ::ng-deep .panel-body.pref-grid .mat-mdc-slide-toggle .mdc-label {
+  color: #fff !important;
+  opacity: .95 !important;
+}
+:host ::ng-deep .mat-mdc-slide-toggle.mat-mdc-slide-toggle-disabled .mdc-label {
+  color: rgba(255,255,255,.6) !important;
+  opacity: 1 !important;
+}

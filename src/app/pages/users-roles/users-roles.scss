@@ -1,0 +1,66 @@
+:host { display:block; background:#0d1117; color:#e8eef2; min-height:calc(100vh - 56px); }
+.ur-wrap { padding:16px; }
+
+/* Head */
+.head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
+.title { display:flex; align-items:center; gap:10px; }
+.title mat-icon { color:#48dbfb; }
+.title h1 {
+  margin:0; font-size:26px;
+  background: linear-gradient(90deg,#6c5ce7,#48dbfb);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.sub { color:#9fb3c8; font-size:12px; }
+
+/* Panels */
+.panel { background: rgba(18,22,28,0.92); border:1px solid #1f2630; border-radius:12px; }
+.panel-head { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #1f2630; }
+.panel-head .left { display:flex; align-items:center; gap:8px; }
+.panel-head mat-icon { color:#48dbfb; }
+.panel-body { padding:14px; }
+.badge { background:#263244; padding:2px 8px; border-radius:16px; color:#cfe0ef; font-size:12px; }
+
+.mt-2{ margin-top:12px; }
+.table-wrap { overflow:auto; }
+th { color:#aab7c6; font-weight:600; }
+td.text-end { text-align:right; }
+tr.mat-row:hover { background: rgba(255,255,255,.03); }
+
+/* Name cell */
+.namecell .n { font-weight:700; }
+.namecell .e { color:#9fb3c8; font-size:12px; }
+
+/* Chips */
+.mat-mdc-chip.active { background:#17c964; color:#062b17; }
+.mat-mdc-chip.inactive { background:#ff6b6b; color:#300; }
+.r-admin { background:#9055ff; color:#fff; }
+.r-ops { background:#48dbfb; color:#0b1324; }
+.r-agent { background:#ffb020; color:#241200; }
+.r-viewer { background:#9aa4b2; color:#10151c; }
+
+/* Scoped form look */
+.ur-form .mat-mdc-form-field{ width:100%; --mdc-outlined-text-field-container-height:44px; --mat-form-field-container-text-size:14px; margin-bottom:8px; }
+.ur-form .mdc-text-field--outlined{ background: rgba(255,255,255,.04); border-radius:10px; }
+.ur-form .mdc-text-field__input,
+.ur-form .mat-mdc-input-element,
+.ur-form .mat-mdc-select-value,
+.ur-form .mat-mdc-select-value-text{ color:#fff; caret-color:#fff; }
+.ur-form .mdc-floating-label,
+.ur-form .mdc-floating-label--float-above{ color:rgba(255,255,255,.92); }
+.ur-form .mdc-notched-outline__leading,
+.ur-form .mdc-notched-outline__notch,
+.ur-form .mdc-notched-outline__trailing{ border-color:#2a3341; }
+.ur-form .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+.ur-form .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+.ur-form .mat-mdc-form-field:hover .mdc-notched-outline__trailing{ border-color:#324152; }
+.ur-form .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.ur-form .mdc-notched-outline__notch,
+.ur-form .mdc-notched-outline__trailing{ border-color:#48dbfb; box-shadow:0 0 0 3px rgba(72,219,251,.15); }
+
+/* Roles tab */
+.role-head{ display:flex; gap:8px; align-items:end; width:420px; max-width:100%; }
+.perm-table table{ width:100%; border-collapse:collapse; }
+.perm-table th, .perm-table td{ padding:10px 8px; border-bottom:1px solid #1f2630; text-align:center; }
+.perm-table thead th{ color:#cfe0ef; font-weight:700; }
+.perm-table tbody .mod{ text-align:left; font-weight:700; color:#e8eef2; }
+.hint{ color:#9fb3c8; font-size:12px; }

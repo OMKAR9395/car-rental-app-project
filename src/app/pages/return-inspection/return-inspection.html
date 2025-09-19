@@ -1,0 +1,262 @@
+<section class="ri-wrap">
+  <div class="head">
+    <div class="title">
+      <mat-icon>rule_folder</mat-icon>
+      <h1>Return Damage Inspection</h1>
+      <span class="sub">Mark damages, compute charges & finalize deposit</span>
+    </div>
+    <div class="head-actions">
+      <button mat-stroked-button color="primary" (click)="exportCsv()">
+        <mat-icon>download</mat-icon> Export
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Left: Main form -->
+    <div class="col-12 col-xxl-4">
+      <mat-card class="panel">
+        <div class="panel-head">
+          <div class="left">
+            <mat-icon>assignment</mat-icon>
+            <h3>Inspection Details</h3>
+          </div>
+        </div>
+
+        <form class="panel-body ri-form" [formGroup]="form" (ngSubmit)="submit()">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Booking ID</mat-label>
+            <input matInput formControlName="bookingId" placeholder="BK-1045">
+            <mat-error *ngIf="form.get('bookingId')?.invalid">Required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Car</mat-label>
+            <mat-select formControlName="carId">
+              <mat-option *ngFor="let c of cars()" [value]="c.id">{{ c.brand }} {{ c.model }} ({{ c.id }})</mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('carId')?.invalid">Required</mat-error>
+          </mat-form-field>
+
+          <div class="row g-2">
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Odometer (km)</mat-label>
+                <input matInput type="number" formControlName="odometer" min="0">
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <label class="lbl">Fuel Level: <b>{{ form.value.fuel }}%</b></label>
+              <mat-slider min="0" max="100" step="1">
+                <input matSliderThumb [value]="form.value.fuel || 0" (input)="onFuelInput($event)">
+              </mat-slider>
+            </div>
+          </div>
+
+          <div class="row g-2">
+            <div class="col-md-6 d-flex align-items-center">
+              <mat-slide-toggle formControlName="cleaningRequired">Cleaning required</mat-slide-toggle>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Deposit (₹)</mat-label>
+                <input matInput type="number" formControlName="deposit" min="0">
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row g-2">
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Late hours</mat-label>
+                <input matInput type="number" formControlName="lateHours" min="0">
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Late fee / hour (₹)</mat-label>
+                <input matInput type="number" formControlName="lateFeePerHour" min="0">
+              </mat-form-field>
+            </div>
+          </div>
+
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Overall Notes</mat-label>
+            <textarea matInput rows="2" formControlName="notes" placeholder="e.g. Exterior scratch, interior needs vacuuming"></textarea>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-stroked-button color="primary" type="button" (click)="resetAll()">
+              <mat-icon>restart_alt</mat-icon> Reset
+            </button>
+            <span class="flex"></span>
+            <button mat-raised-button color="accent" type="submit">
+              <mat-icon>save</mat-icon> Save Inspection
+            </button>
+          </div>
+        </form>
+      </mat-card>
+
+      <!-- Totals -->
+      <mat-card class="panel mt-2">
+        <div class="panel-head">
+          <div class="left">
+            <mat-icon>calculate</mat-icon>
+            <h3>Summary</h3>
+          </div>
+        </div>
+        <div class="panel-body totals">
+          <div class="row g-2">
+            <div class="col-6"><span>Damage Total</span></div>
+            <div class="col-6 text-end"><b>{{ currency(totalDamage()) }}</b></div>
+
+            <div class="col-6"><span>Fuel Shortage</span></div>
+            <div class="col-6 text-end"><b>{{ currency(fuelCharge()) }}</b></div>
+
+            <div class="col-6"><span>Cleaning</span></div>
+            <div class="col-6 text-end"><b>{{ currency(cleaningCharge()) }}</b></div>
+
+            <div class="col-6"><span>Late Fee</span></div>
+            <div class="col-6 text-end"><b>{{ currency(lateFee()) }}</b></div>
+
+            <div class="col-12"><mat-divider></mat-divider></div>
+
+            <div class="col-6"><span>Sub Total</span></div>
+            <div class="col-6 text-end"><b>{{ currency(subTotal()) }}</b></div>
+
+            <div class="col-6"><span>Deposit</span></div>
+            <div class="col-6 text-end"><b>- {{ currency(deposit()) }}</b></div>
+
+            <div class="col-12"><mat-divider></mat-divider></div>
+
+            <div class="col-6"><span>Net Payable</span></div>
+            <div class="col-6 text-end" [class.green]="refund()>0" [class.red]="netPayable()>0">
+              <b *ngIf="netPayable()>0">{{ currency(netPayable()) }}</b>
+              <b *ngIf="refund()>0">Refund {{ currency(refund()) }}</b>
+              <b *ngIf="!refund() && !netPayable()">₹0</b>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Right: Damages -->
+    <div class="col-12 col-xxl-8">
+      <mat-card class="panel">
+        <div class="panel-head">
+          <div class="left">
+            <mat-icon>gavel</mat-icon>
+            <h3>Damages ({{ damages().length }})</h3>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <!-- add damage -->
+          <form class="d-form" [formGroup]="dForm">
+            <div class="row g-2 align-items-end">
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Part</mat-label>
+                  <mat-select formControlName="part">
+                    <mat-option *ngFor="let p of ['Front bumper','Rear bumper','Left door','Right door','Bonnet','Boot','Front glass','Rear glass','Roof','Alloy/tyre','Seat/upholstery','Dashboard','Other']" [value]="p">{{ p }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Severity</mat-label>
+                  <mat-select formControlName="severity">
+                    <mat-option value="minor">Minor</mat-option>
+                    <mat-option value="moderate">Moderate</mat-option>
+                    <mat-option value="major">Major</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Est. Cost (₹)</mat-label>
+                  <input matInput type="number" formControlName="estCost" min="0" placeholder="e.g. 1200">
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Notes</mat-label>
+                  <input matInput formControlName="notes" placeholder="scratch, dent...">
+                </mat-form-field>
+              </div>
+
+              <div class="col-12">
+                <div class="up-row">
+                  <input id="damagePhotos" type="file" accept="image/*" multiple (change)="onDamagePhotos($event)">
+                  <button mat-stroked-button type="button" (click)="clearDamagePhotos()"><mat-icon>clear</mat-icon> Clear</button>
+                  <button mat-raised-button color="accent" type="button" (click)="addDamage()"><mat-icon>add</mat-icon> Add</button>
+                </div>
+                <div class="thumbs" *ngIf="dPreviews().length">
+                  <img *ngFor="let url of dPreviews()" [src]="url" alt="damage">
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <!-- list -->
+          <div class="table-wrap mt-2">
+            <table mat-table [dataSource]="damages()">
+              <ng-container matColumnDef="part">
+                <th mat-header-cell *matHeaderCellDef> Part </th>
+                <td mat-cell *matCellDef="let r">{{ r.part }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="severity">
+                <th mat-header-cell *matHeaderCellDef> Severity </th>
+                <td mat-cell *matCellDef="let r">
+                  <mat-chip-set>
+                    <mat-chip [class.sev-min]="r.severity==='minor'"
+                              [class.sev-mod]="r.severity==='moderate'"
+                              [class.sev-maj]="r.severity==='major'">
+                      {{ r.severity }}
+                    </mat-chip>
+                  </mat-chip-set>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="cost">
+                <th mat-header-cell *matHeaderCellDef> Est. Cost </th>
+                <td mat-cell *matCellDef="let r">{{ currency(r.estCost || 0) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="photos">
+                <th mat-header-cell *matHeaderCellDef> Photos </th>
+                <td mat-cell *matCellDef="let r">
+                  <div class="mini-photos" *ngIf="r.photos?.length">
+                    <img *ngFor="let u of r.photos" [src]="u" alt="">
+                  </div>
+                  <span *ngIf="!r.photos?.length">-</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="notes">
+                <th mat-header-cell *matHeaderCellDef> Notes </th>
+                <td mat-cell *matCellDef="let r">{{ r.notes || '-' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let r" class="text-end">
+                  <button mat-icon-button color="warn" matTooltip="Remove" (click)="removeDamage(r)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayed"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayed;"></tr>
+            </table>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</section>

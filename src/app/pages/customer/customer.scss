@@ -1,0 +1,27 @@
+:host { display:block; background:#0d1117; color:#e8eef2; min-height:calc(100vh - 56px); }
+.cust-wrap { padding:16px; }
+
+.head .title { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.head .title mat-icon { color:#48dbfb; }
+.head .title h1 {
+  margin:0; font-size:26px;
+  background: linear-gradient(90deg,#6c5ce7,#48dbfb);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+
+.panel { background: rgba(18,22,28,0.92); border:1px solid #1f2630; }
+.panel-head { display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:1px solid #1f2630; }
+.panel-head .left { display:flex; align-items:center; gap:8px; }
+.panel-head mat-icon { color:#48dbfb; }
+.panel-body { padding:14px; }
+
+.lbl { display:block; color:#cfe0ef; font-weight:600; margin-bottom:6px; }
+.radio-line { display:flex; align-items:center; }
+
+.form-actions { display:flex; align-items:center; gap:10px; margin-top:8px; }
+.form-actions .flex { flex:1 1 auto; }
+
+.table-wrap { overflow:auto; }
+.mt-3 { margin-top:12px; }
+
+/* keep labels & input text white globally (you already set this in styles.scss) */

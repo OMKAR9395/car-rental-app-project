@@ -1,0 +1,110 @@
+<mat-toolbar class="navbar shadow-sm">
+  <button class="brand btn btn-link p-0 me-2" routerLink="/layout/dashboard" matTooltip="Home">
+    <mat-icon class="logo">directions_car</mat-icon>
+    <span class="brand-text">RentX</span>
+  </button>
+
+  <nav class="links d-none d-md-flex">
+    <a routerLink="/layout/dashboard" routerLinkActive="active" class="nav-link">
+      <mat-icon>space_dashboard</mat-icon><span>Dashboard</span>
+    </a>
+    <a routerLink="/layout/cars" routerLinkActive="active" class="nav-link">
+      <mat-icon>garage</mat-icon><span>Cars</span>
+    </a>
+    <a routerLink="/layout/manage-bookings" routerLinkActive="active" class="nav-link">
+      <mat-icon>assignment</mat-icon><span>Bookings</span>
+    </a>
+
+    <button mat-button class="nav-link more" [matMenuTriggerFor]="moreMenu">
+      <mat-icon>apps</mat-icon><span>More</span><mat-icon class="ms-1">expand_more</mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu" class="mega" yPosition="below" xPosition="after">
+      <div class="mega-grid">
+        <div class="col">
+          <h6><mat-icon>play_circle</mat-icon>Operations</h6>
+          <button mat-menu-item routerLink="/layout/manage-bookings"><mat-icon>assignment</mat-icon><span>Bookings</span></button>
+          <button mat-menu-item routerLink="/layout/return-inspection"><mat-icon>rule_folder</mat-icon><span>Return Inspection</span></button>
+          <button mat-menu-item routerLink="/layout/maintenance"><mat-icon>event_busy</mat-icon><span>Maintenance</span></button>
+        </div>
+        <div class="col">
+          <h6><mat-icon>build</mat-icon>Masters</h6>
+          <button mat-menu-item routerLink="/layout/car-master"><mat-icon>tune</mat-icon><span>Car Master</span></button>
+          <button mat-menu-item routerLink="/layout/branches"><mat-icon>store</mat-icon><span>Branches</span></button>
+          <button mat-menu-item routerLink="/layout/customers"><mat-icon>group</mat-icon><span>Customers</span></button>
+        </div>
+        <div class="col">
+          <h6><mat-icon>insights</mat-icon>Analytics</h6>
+          <button mat-menu-item routerLink="/layout/reports"><mat-icon>bar_chart</mat-icon><span>Reports</span></button>
+        </div>
+        <div class="col">
+          <h6><mat-icon>admin_panel_settings</mat-icon>System</h6>
+          <button mat-menu-item routerLink="/layout/users-roles"><mat-icon>admin_panel_settings</mat-icon><span>Users & Roles</span></button>
+          <button mat-menu-item routerLink="/layout/settings"><mat-icon>settings</mat-icon><span>Settings</span></button>
+          <button mat-menu-item routerLink="/layout/profile"><mat-icon>person</mat-icon><span>Profile</span></button>
+        </div>
+      </div>
+    </mat-menu>
+  </nav>
+
+  <span class="flex-spacer"></span>
+
+  <div class="toolbar-search d-none d-md-flex" [class.open]="showSearch()">
+    <button mat-icon-button (click)="toggleSearch()" matTooltip="Search"><mat-icon>search</mat-icon></button>
+    <mat-form-field appearance="outline" class="search-field" *ngIf="showSearch()">
+      <mat-label>Search…</mat-label>
+      <input matInput (keyup.enter)="onGlobalSearch($event)" placeholder="Cars, bookings, customers" />
+    </mat-form-field>
+  </div>
+
+  <div class="icons d-none d-md-flex">
+    <button mat-icon-button matTooltip="Toggle theme" (click)="toggleTheme()">
+      <mat-icon>{{ theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Notifications" [matBadge]="notifCount()" matBadgeColor="accent">
+      <mat-icon>notifications</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Cart" [matBadge]="cartCount()" matBadgeColor="warn">
+      <mat-icon>shopping_cart</mat-icon>
+    </button>
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item routerLink="/layout/profile"><mat-icon>person</mat-icon><span>Profile</span></button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item routerLink="/login"><mat-icon>logout</mat-icon><span>Logout</span></button>
+    </mat-menu>
+  </div>
+
+  <button class="ms-1 d-inline d-md-none" mat-icon-button (click)="toggle()">
+    <mat-icon>{{ collapsed() ? 'menu' : 'close' }}</mat-icon>
+  </button>
+</mat-toolbar>
+
+<!-- Mobile drawer -->
+<div class="mobile d-md-none" [class.open]="!collapsed()">
+  <a routerLink="/layout/dashboard" class="mobile-link" (click)="toggle()"><mat-icon>space_dashboard</mat-icon> Dashboard</a>
+  <a routerLink="/layout/cars" class="mobile-link" (click)="toggle()"><mat-icon>garage</mat-icon> Cars</a>
+  <a routerLink="/layout/manage-bookings" class="mobile-link" (click)="toggle()"><mat-icon>assignment</mat-icon> Bookings</a>
+
+  <div class="mobile-section">More</div>
+  <a routerLink="/layout/customers" class="mobile-link" (click)="toggle()"><mat-icon>group</mat-icon> Customers</a>
+  <a routerLink="/layout/branches" class="mobile-link" (click)="toggle()"><mat-icon>store</mat-icon> Branches</a>
+  <a routerLink="/layout/car-master" class="mobile-link" (click)="toggle()"><mat-icon>tune</mat-icon> Car Master</a>
+  <a routerLink="/layout/maintenance" class="mobile-link" (click)="toggle()"><mat-icon>event_busy</mat-icon> Maintenance</a>
+  <a routerLink="/layout/return-inspection" class="mobile-link" (click)="toggle()"><mat-icon>rule_folder</mat-icon> Return Inspection</a>
+  <a routerLink="/layout/users-roles" class="mobile-link" (click)="toggle()"><mat-icon>admin_panel_settings</mat-icon> Users & Roles</a>
+  <a routerLink="/layout/reports" class="mobile-link" (click)="toggle()"><mat-icon>bar_chart</mat-icon> Reports</a>
+  <a routerLink="/layout/settings" class="mobile-link" (click)="toggle()"><mat-icon>settings</mat-icon> Settings</a>
+
+  <div class="mobile-icons">
+    <button mat-stroked-button color="primary" class="w-100 mb-2" routerLink="/layout/profile" (click)="toggle()">
+      <mat-icon class="me-1">person</mat-icon> Profile
+    </button>
+    <button mat-stroked-button color="warn" class="w-100" routerLink="/login">
+      <mat-icon class="me-1">logout</mat-icon> Logout
+    </button>
+  </div>
+</div>
+
+<router-outlet></router-outlet>

@@ -1,0 +1,49 @@
+:host { display:block; }
+
+.navbar{
+  position:sticky; top:0; z-index:1100;
+  background:rgba(13,17,23,.9); backdrop-filter:blur(6px);
+  border-bottom:1px solid #1f2630; padding:0 10px;
+}
+.brand{ display:flex; align-items:center; gap:8px; text-decoration:none; }
+.logo{ color:#48dbfb; }
+.brand-text{
+  font-weight:800; letter-spacing:.5px;
+  background:linear-gradient(90deg,#6c5ce7,#48dbfb);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+
+.links{ display:flex; gap:2px; margin-left:8px; }
+.nav-link{ display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; color:#cfe0ef; }
+.nav-link:hover{ background:rgba(255,255,255,.05); }
+.nav-link.active{ background:rgba(72,219,251,.15); color:#fff; }
+.nav-link mat-icon{ font-size:20px; height:20px; width:20px; }
+
+.toolbar-search{ display:flex; align-items:center; gap:6px; margin-right:8px; }
+.search-field{ width:320px; --mdc-outlined-text-field-container-height:40px; }
+
+.icons{ display:flex; gap:4px; align-items:center; }
+.flex-spacer{ flex:1 1 auto; }
+
+/* mega menu look */
+.mega .mat-mdc-menu-content{ padding:10px 12px; }
+.mega-grid{ display:grid; grid-template-columns:repeat(4,minmax(160px,1fr)); gap:8px; min-width:720px; }
+.mega-grid h6{
+  margin:0 0 6px; display:flex; align-items:center; gap:6px;
+  font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:#9fb3c8;
+}
+.mega-grid .mat-mdc-menu-item{ border-radius:8px; }
+.mega-grid .mat-mdc-menu-item:hover{ background:rgba(255,255,255,.06); }
+
+/* mobile drawer */
+.mobile{ display:none; border-bottom:1px solid #1f2630; background:#0d1117; }
+.mobile.open{ display:block; }
+.mobile-link{ display:flex; align-items:center; gap:10px; padding:12px 14px; color:#cfe0ef; text-decoration:none; }
+.mobile-link.active,.mobile-link:hover{ background:rgba(255,255,255,.05); }
+.mobile-section{ padding:8px 14px; color:#9fb3c8; text-transform:uppercase; font-size:12px; }
+.mobile-icons{ padding:12px; border-top:1px solid #1f2630; }
+
+/* optional light theme (global styles.scss मध्ये .light-theme body ला लावा) */
+:host-context(.light-theme) .navbar{ background:#fff; border-color:#e5e7eb; }
+:host-context(.light-theme) .nav-link{ color:#334155; }
+:host-context(.light-theme) .nav-link.active{ background:#e6faff; color:#0b1324; }
