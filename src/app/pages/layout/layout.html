@@ -1,9 +1,12 @@
+<!-- NAVBAR -->
 <mat-toolbar class="navbar shadow-sm">
+  <!-- Brand -->
   <button class="brand btn btn-link p-0 me-2" routerLink="/layout/dashboard" matTooltip="Home">
     <mat-icon class="logo">directions_car</mat-icon>
     <span class="brand-text">RentX</span>
   </button>
 
+  <!-- Desktop links -->
   <nav class="links d-none d-md-flex">
     <a routerLink="/layout/dashboard" routerLinkActive="active" class="nav-link">
       <mat-icon>space_dashboard</mat-icon><span>Dashboard</span>
@@ -15,39 +18,16 @@
       <mat-icon>assignment</mat-icon><span>Bookings</span>
     </a>
 
-    <button mat-button class="nav-link more" [matMenuTriggerFor]="moreMenu">
-      <mat-icon>apps</mat-icon><span>More</span><mat-icon class="ms-1">expand_more</mat-icon>
+    <!-- Custom mega toggle (no scroll dropdown) -->
+    <button mat-button class="nav-link more" (click)="toggleMega()">
+      <mat-icon>apps</mat-icon><span>More</span>
+      <mat-icon class="ms-1">{{ megaOpen() ? 'expand_less' : 'expand_more' }}</mat-icon>
     </button>
-    <mat-menu #moreMenu="matMenu" class="mega" yPosition="below" xPosition="after">
-      <div class="mega-grid">
-        <div class="col">
-          <h6><mat-icon>play_circle</mat-icon>Operations</h6>
-          <button mat-menu-item routerLink="/layout/manage-bookings"><mat-icon>assignment</mat-icon><span>Bookings</span></button>
-          <button mat-menu-item routerLink="/layout/return-inspection"><mat-icon>rule_folder</mat-icon><span>Return Inspection</span></button>
-          <button mat-menu-item routerLink="/layout/maintenance"><mat-icon>event_busy</mat-icon><span>Maintenance</span></button>
-        </div>
-        <div class="col">
-          <h6><mat-icon>build</mat-icon>Masters</h6>
-          <button mat-menu-item routerLink="/layout/car-master"><mat-icon>tune</mat-icon><span>Car Master</span></button>
-          <button mat-menu-item routerLink="/layout/branches"><mat-icon>store</mat-icon><span>Branches</span></button>
-          <button mat-menu-item routerLink="/layout/customers"><mat-icon>group</mat-icon><span>Customers</span></button>
-        </div>
-        <div class="col">
-          <h6><mat-icon>insights</mat-icon>Analytics</h6>
-          <button mat-menu-item routerLink="/layout/reports"><mat-icon>bar_chart</mat-icon><span>Reports</span></button>
-        </div>
-        <div class="col">
-          <h6><mat-icon>admin_panel_settings</mat-icon>System</h6>
-          <button mat-menu-item routerLink="/layout/users-roles"><mat-icon>admin_panel_settings</mat-icon><span>Users & Roles</span></button>
-          <button mat-menu-item routerLink="/layout/settings"><mat-icon>settings</mat-icon><span>Settings</span></button>
-          <button mat-menu-item routerLink="/layout/profile"><mat-icon>person</mat-icon><span>Profile</span></button>
-        </div>
-      </div>
-    </mat-menu>
   </nav>
 
   <span class="flex-spacer"></span>
 
+  <!-- Search -->
   <div class="toolbar-search d-none d-md-flex" [class.open]="showSearch()">
     <button mat-icon-button (click)="toggleSearch()" matTooltip="Search"><mat-icon>search</mat-icon></button>
     <mat-form-field appearance="outline" class="search-field" *ngIf="showSearch()">
@@ -56,6 +36,7 @@
     </mat-form-field>
   </div>
 
+  <!-- Icons -->
   <div class="icons d-none d-md-flex">
     <button mat-icon-button matTooltip="Toggle theme" (click)="toggleTheme()">
       <mat-icon>{{ theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
@@ -66,22 +47,76 @@
     <button mat-icon-button matTooltip="Cart" [matBadge]="cartCount()" matBadgeColor="warn">
       <mat-icon>shopping_cart</mat-icon>
     </button>
-    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User">
+
+    <!-- User -->
+    <button mat-icon-button [routerLink]="'/layout/profile'" matTooltip="Profile">
       <mat-icon>account_circle</mat-icon>
     </button>
-    <mat-menu #userMenu="matMenu">
-      <button mat-menu-item routerLink="/layout/profile"><mat-icon>person</mat-icon><span>Profile</span></button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item routerLink="/login"><mat-icon>logout</mat-icon><span>Logout</span></button>
-    </mat-menu>
+    <button mat-icon-button [routerLink]="'/login'" matTooltip="Logout">
+      <mat-icon>logout</mat-icon>
+    </button>
   </div>
 
+  <!-- Mobile burger -->
   <button class="ms-1 d-inline d-md-none" mat-icon-button (click)="toggle()">
     <mat-icon>{{ collapsed() ? 'menu' : 'close' }}</mat-icon>
   </button>
 </mat-toolbar>
 
-<!-- Mobile drawer -->
+<!-- FULL-WIDTH MEGA PANEL (no inner scroll) -->
+<div class="mega-backdrop" *ngIf="megaOpen()" (click)="closeMega()"></div>
+<div class="mega-panel" *ngIf="megaOpen()" (click)="$event.stopPropagation()">
+  <!-- quick actions strip -->
+  <div class="quick">
+    <button class="qbtn" routerLink="/layout/manage-bookings" (click)="closeMega()">
+      <mat-icon>add_circle</mat-icon> New Booking
+    </button>
+    <button class="qbtn" routerLink="/layout/customers" (click)="closeMega()">
+      <mat-icon>person_add</mat-icon> Add Customer
+    </button>
+    <button class="qbtn" routerLink="/layout/cars" (click)="closeMega()">
+      <mat-icon>add_road</mat-icon> Add Car
+    </button>
+    <button class="qbtn" routerLink="/layout/reports" (click)="closeMega()">
+      <mat-icon>insights</mat-icon> View Reports
+    </button>
+    <span class="flex"></span>
+    <button mat-icon-button class="close" (click)="closeMega()" matTooltip="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- grid categories -->
+  <div class="grid">
+    <div class="col">
+      <h6><mat-icon>play_circle</mat-icon>Operations</h6>
+      <a routerLink="/layout/manage-bookings" (click)="closeMega()"><mat-icon>assignment</mat-icon><span>Bookings</span></a>
+      <a routerLink="/layout/return-inspection" (click)="closeMega()"><mat-icon>rule_folder</mat-icon><span>Return Inspection</span></a>
+      <a routerLink="/layout/maintenance" (click)="closeMega()"><mat-icon>event_busy</mat-icon><span>Maintenance</span></a>
+    </div>
+
+    <div class="col">
+      <h6><mat-icon>build</mat-icon>Masters</h6>
+      <a routerLink="/layout/car-master" (click)="closeMega()"><mat-icon>tune</mat-icon><span>Car Master</span></a>
+      <a routerLink="/layout/branches" (click)="closeMega()"><mat-icon>store</mat-icon><span>Branches</span></a>
+      <a routerLink="/layout/customers" (click)="closeMega()"><mat-icon>group</mat-icon><span>Customers</span></a>
+    </div>
+
+    <div class="col">
+      <h6><mat-icon>insights</mat-icon>Analytics</h6>
+      <a routerLink="/layout/reports" (click)="closeMega()"><mat-icon>bar_chart</mat-icon><span>Reports</span></a>
+    </div>
+
+    <div class="col">
+      <h6><mat-icon>admin_panel_settings</mat-icon>System</h6>
+      <a routerLink="/layout/users-roles" (click)="closeMega()"><mat-icon>admin_panel_settings</mat-icon><span>Users & Roles</span></a>
+      <a routerLink="/layout/settings" (click)="closeMega()"><mat-icon>settings</mat-icon><span>Settings</span></a>
+      <a routerLink="/layout/profile" (click)="closeMega()"><mat-icon>person</mat-icon><span>Profile</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE COLLAPSE -->
 <div class="mobile d-md-none" [class.open]="!collapsed()">
   <a routerLink="/layout/dashboard" class="mobile-link" (click)="toggle()"><mat-icon>space_dashboard</mat-icon> Dashboard</a>
   <a routerLink="/layout/cars" class="mobile-link" (click)="toggle()"><mat-icon>garage</mat-icon> Cars</a>
